@@ -21,7 +21,7 @@
 # include <semaphore.h> 
 
 // mutex variable
-pthread_mutex_t lock;
+pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 // binary semaphore
 sem_t sem;
 // reader count variable to track how many reader are reading the val
@@ -29,7 +29,7 @@ int reader_count;
 // shared variable between reader and writer threads
 int shared_data;
 
-void *writer(void *data) {
+void *writer(void *arg) {
 	// execute wait semaphore to stop all writers and readers
 	// thread to enter into the critcal section
 	sem_wait(&sem);
@@ -42,7 +42,7 @@ void *writer(void *data) {
 	sem_post(&sem);
 }
 
-void *reader(void *data) {
+void *reader(void *arg) {
 	// taking mutex lock
 	pthread_mutex_lock(&lock);
 	// incrementing the reader count
@@ -74,8 +74,6 @@ void *reader(void *data) {
 int main() {
 	// initialize the semaphore variable
 	sem_init(&sem, 0, 1);
-	// initialize the mutex lock
-       	pthread_mutex_init(&lock, NULL);
 	
 	// create 10 readers thread
 	int noOfReaders = 10;
